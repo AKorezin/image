@@ -7,8 +7,10 @@ class images
 {
 public:
 	images(cv::Mat&);
-	QPixmap getPixmap(){return pixmap;};
+	QPixmap getPixmap();
+	cv::Mat getCvMat(void);
 private:
+	cv::Mat matrix;
 	QImage image;
 	QPixmap pixmap;
 };

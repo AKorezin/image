@@ -3,6 +3,7 @@
 #include "QDebug"
 images::images(cv::Mat &mat)
 {
+	matrix=mat;
 	switch ( mat.type() )
 	{
 	case CV_8UC4:
@@ -36,4 +37,12 @@ images::images(cv::Mat &mat)
 		break;
 	}
 	pixmap=QPixmap::fromImage(image);
+}
+QPixmap images::getPixmap()
+{
+	return pixmap;
+}
+cv::Mat images::getCvMat(void)
+{
+	return matrix;
 }

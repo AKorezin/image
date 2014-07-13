@@ -10,8 +10,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 	tabs=new QTabWidget(ui->centralWidget);
-	qDebug()<<"test";
-	tabs->resize(ui->centralWidget->geometry().size());
+	tabs->resize(this->size().width(),this->height()-ui->menuBar->height());
+	ui->actionSave->setDisabled(1);
+	ui->actionSaveAs->setDisabled(1);
+	ui->actionExport->setDisabled(1);
+	ui->actionClose->setDisabled(1);
 }
 
 MainWindow::~MainWindow()
@@ -28,11 +31,37 @@ void MainWindow::on_actionOpen_triggered()
 	{
 		return;
 	}
+	ui->actionSave->setEnabled(1);
+	ui->actionSaveAs->setEnabled(1);
+	ui->actionExport->setEnabled(1);
+	ui->actionClose->setEnabled(1);
 	images *newimage=new images(image);
-	imagelist<<*newimage;
+	imagelist<<newimage;
 	QLabel *mylabel=new QLabel;
 	mylabel->setPixmap(newimage->getPixmap());
 	mylabel->show();
 
 	tabs->addTab(mylabel,filename);
+
+}
+
+void MainWindow::on_actionClose_triggered()
+{
+	imagelist.removeAt(tabs->currentIndex());
+	tabs->removeTab(tabs->currentIndex());
+	if(imagelist.size()==0)
+	{
+		ui->actionSave->setDisabled(1);
+		ui->actionSaveAs->setDisabled(1);
+		ui->actionExport->setDisabled(1);
+		ui->actionClose->setDisabled(1);
+	}
+}
+
+void MainWindow::on_actionExport_triggered()
+{
+	QString filename=QFileDialog::getSaveFileName(this,"Export to matrix","","YAML File(*.yaml);;XML File(*.xml)");
+	cv::FileStorage file(filename.toUtf8().data(), cv::FileStorage::WRITE);
+	file<<"Test"<<imagelist.at(tabs->currentIndex())->getCvMat();
+	file.release();
 }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>876</width>
-    <height>485</height>
+    <width>591</width>
+    <height>364</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>876</width>
+     <width>591</width>
      <height>19</height>
     </rect>
    </property>
@@ -37,6 +37,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
+    <addaction name="actionImport"/>
     <addaction name="actionExport"/>
     <addaction name="actionClose"/>
     <addaction name="actionQuit"/>
@@ -89,6 +90,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="text">
+    <string>Импортировать</string>
    </property>
   </action>
  </widget>

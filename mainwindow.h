@@ -14,6 +14,7 @@ class MainWindow : public QMainWindow
 
 public:
 	explicit MainWindow(QWidget *parent = 0);
+	void resizeEvent(QResizeEvent *);
 	~MainWindow();
 
 private slots:
@@ -23,10 +24,16 @@ private slots:
 
 	void on_actionExport_triggered();
 
+	void on_actionImport_triggered();
+
+	void onTabClose(int);
+
 private:
 	Ui::MainWindow *ui;
 	QList<images*> imagelist;
 	QTabWidget *tabs;
+	void setActionsDisabled();
+	void setActionsEnabled();
 };
 
 #endif // MAINWINDOW_H

@@ -13,9 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    images.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    images.h
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += /usr/include/opencv

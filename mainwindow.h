@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include "QList"
+#include "images.h"
 namespace Ui {
 class MainWindow;
 }
@@ -20,6 +21,8 @@ private slots:
 
 private:
 	Ui::MainWindow *ui;
+	QList<images> imagelist;
+	QTabWidget *tabs;
 };
 
 #endif // MAINWINDOW_H

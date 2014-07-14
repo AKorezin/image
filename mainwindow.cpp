@@ -110,3 +110,26 @@ void MainWindow::on_actionImport_triggered()
 	mylabel->show();
 	tabs->addTab(mylabel,filename);
 }
+
+void MainWindow::on_actionSave_triggered()
+{
+	QString filename=tabs->tabText(tabs->currentIndex());
+	QFile checkfile(filename);
+	if((filename.endsWith("tiff",Qt::CaseInsensitive) or filename.endsWith("tif",Qt::CaseInsensitive)) and checkfile.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		checkfile.close();
+		cv::imwrite(filename.toUtf8().data(),imagelist.at(tabs->currentIndex())->getCvMat());
+	}
+	else
+		on_actionSaveAs_triggered();
+}
+
+void MainWindow::on_actionSaveAs_triggered()
+{
+	QString filename=QFileDialog::getSaveFileName(this,"Save Image as","","TIFF Files(*.tiff *.tif);;PNG Files(*.png);;All Files(*)");
+	QFile checkfile(filename);
+	if(!checkfile.open(QIODevice::WriteOnly | QIODevice::Text))
+		return;
+	checkfile.close();
+	cv::imwrite(filename.toUtf8().data(),imagelist.at(tabs->currentIndex())->getCvMat());
+}

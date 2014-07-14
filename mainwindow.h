@@ -28,6 +28,10 @@ private slots:
 
 	void onTabClose(int);
 
+	void on_actionSave_triggered();
+
+	void on_actionSaveAs_triggered();
+
 private:
 	Ui::MainWindow *ui;
 	QList<images*> imagelist;

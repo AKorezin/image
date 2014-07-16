@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    images.cpp
+    images.cpp \
+    scene.cpp
 
 HEADERS  += mainwindow.h \
-    images.h
+    images.h \
+    scene.h
 
 FORMS    += mainwindow.ui
 INCLUDEPATH += /usr/include/opencv

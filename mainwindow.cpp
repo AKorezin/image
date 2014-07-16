@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "scene.h"
 #include "QFileDialog"
 #include "QLabel"
 #include "QMouseEvent"
+#include "QGraphicsView"
 #include "QDebug"
 #include "opencv2/highgui/highgui.hpp"
 MainWindow::MainWindow(QWidget *parent) :
@@ -137,10 +139,14 @@ void MainWindow::on_actionImport_triggered()
 	setActionsEnabled();
 	images *newimage=new images(image);
 	imagelist<<newimage;
-	QLabel *mylabel=new QLabel;
+	scene pixmap;
+	pixmap.addPixmap(newimage->getPixmap());
+	QGraphicsView *view=new QGraphicsView;
+	view->setScene(&pixmap);
+	/*QLabel *mylabel=new QLabel;
 	mylabel->setPixmap(newimage->getPixmap());
-	mylabel->show();
-	tabs->addTab(mylabel,filename);
+	mylabel->show();*/
+	tabs->addTab(view,filename);
 }
 
 void MainWindow::on_actionSave_triggered()

@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(tabs,SIGNAL(tabCloseRequested(int)),this,SLOT(onTabClose(int)));
 	setActionsDisabled();
 	flag=0;
+	tabs->setStyleSheet("border:0px solid black;");
+
 }
 
 void MainWindow::resizeEvent(QResizeEvent *)
@@ -94,10 +96,13 @@ void MainWindow::on_actionOpen_triggered()
 	setActionsEnabled();
 	images *newimage=new images(image);
 	imagelist<<newimage;
-	QLabel *mylabel=new QLabel;
-	mylabel->setPixmap(newimage->getPixmap());
-	mylabel->show();
-	tabs->addTab(mylabel,filename);
+	scene *pixmap=new scene;
+	pixmap->addPixmap(newimage->getPixmap());
+	QGraphicsView *view=new QGraphicsView;
+	view->setScene(pixmap);
+	view->show();
+	tabs->addTab(view,filename);
+
 
 }
 
@@ -139,13 +144,11 @@ void MainWindow::on_actionImport_triggered()
 	setActionsEnabled();
 	images *newimage=new images(image);
 	imagelist<<newimage;
-	scene pixmap;
-	pixmap.addPixmap(newimage->getPixmap());
+	scene *pixmap=new scene;
+	pixmap->addPixmap(newimage->getPixmap());
 	QGraphicsView *view=new QGraphicsView;
-	view->setScene(&pixmap);
-	/*QLabel *mylabel=new QLabel;
-	mylabel->setPixmap(newimage->getPixmap());
-	mylabel->show();*/
+	view->setScene(pixmap);
+	view->show();
 	tabs->addTab(view,filename);
 }
 

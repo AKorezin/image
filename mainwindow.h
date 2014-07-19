@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 #include "QList"
+#include "QSettings"
 #include "images.h"
+#include "settingsdialog.h"
 namespace Ui {
 class MainWindow;
 }
@@ -14,7 +16,7 @@ class MainWindow : public QMainWindow
 
 public:
 	explicit MainWindow(QWidget *parent = 0);
-
+	//void loadSettings();
 	~MainWindow();
 
 private slots:
@@ -32,16 +34,21 @@ private slots:
 
 	void on_actionSaveAs_triggered();
 
+	void openSettingsDialog();
+
+	void saveSettings();
 private:
-	void resizeEvent(QResizeEvent *);
-	void mouseMoveEvent(QMouseEvent *);
-	void mouseReleaseEvent(QMouseEvent *);
 	Ui::MainWindow *ui;
 	QList<images*> imagelist;
 	QTabWidget *tabs;
+	settingsDialog *dialog;
 	void setActionsDisabled();
 	void setActionsEnabled();
-	int x,y,flag;
+	void initGui();
+	void loadSettings();
+
+	int x,y,flag,loaded;
+	QSettings *curentSettings;
 };
 
 #endif // MAINWINDOW_H

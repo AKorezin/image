@@ -5,26 +5,48 @@
 #include "QLabel"
 #include "QMouseEvent"
 #include "QGraphicsView"
+#include "settingsdialog.h"
 #include "QDebug"
 #include "opencv2/highgui/highgui.hpp"
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
 {
-	ui->setupUi(this);
+	initGui();
+	loaded=0;
+	loadSettings();
+	flag=0;
+}
 
+void MainWindow::initGui()
+{
+	ui->setupUi(this);
 	tabs=new QTabWidget(ui->centralWidget);
 	tabs->setTabsClosable(1);
+	tabs->resize(this->size().width(),this->height()-ui->menuBar->height());
 	connect(tabs,SIGNAL(tabCloseRequested(int)),this,SLOT(onTabClose(int)));
 	setActionsDisabled();
-	flag=0;
 	tabs->setStyleSheet("border:0px solid black;");
+	QAction *settings=ui->menuBar->addAction("Настройки");
+	dialog=new settingsDialog;
+	dialog->setSettings(curentSettings);
+	connect(settings,SIGNAL(triggered()),this,SLOT(openSettingsDialog()));
+}
+
+void MainWindow::loadSettings()
+{
+	curentSettings=new QSettings;
+}
+
+void MainWindow::saveSettings()
+{
 
 }
 
-void MainWindow::resizeEvent(QResizeEvent *)
+void MainWindow::openSettingsDialog()
 {
-	tabs->resize(this->size().width(),this->height()-ui->menuBar->height()+1);
+	connect(dialog,SIGNAL(accepted()),this,SLOT(saveSettings()));
+	dialog->show();
 }
 
 void MainWindow::setActionsDisabled()
@@ -42,34 +64,7 @@ void MainWindow::setActionsEnabled()
 	ui->actionClose->setEnabled(1);
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent *event)
-{
 
-	if(event->buttons() & Qt::MidButton)
-	{
-		QWidget *drager=tabs->currentWidget();
-		int dx=event->x()-x,dy=event->y()-y;
-
-		if(drager!=NULL)
-		{
-			qDebug()<<drager;
-			if(flag)
-				drager->move(drager->x()+dx,drager->y()+dy);
-			x=event->x();
-			y=event->y();
-			flag=1;
-		}
-	}
-}
-
-void MainWindow::mouseReleaseEvent(QMouseEvent * event)
-{
-	if((event->button() == Qt::MidButton) && flag)
-	{
-		qDebug()<<"release";
-		flag=0;
-	}
-}
 
 MainWindow::~MainWindow()
 {

@@ -6,6 +6,7 @@ settingsDialog::settingsDialog(QWidget *parent) :
 	ui(new Ui::settingsDialog)
 {
 	ui->setupUi(this);
+	this->setWindowTitle("Настройки");
 	newSet=new QSettings;
 	defSet=new QSettings;
 	oldSet=new QSettings;

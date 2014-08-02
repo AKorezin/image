@@ -5,9 +5,11 @@
 #include "QLabel"
 #include "QMouseEvent"
 #include "QGraphicsView"
+#include "QToolBar"
 #include "settingsdialog.h"
 #include "QDebug"
 #include "opencv2/highgui/highgui.hpp"
+
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
@@ -21,9 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::initGui()
 {
 	ui->setupUi(this);
+	this->setWindowTitle("Image");
 	tabs=new QTabWidget(ui->centralWidget);
 	tabs->setTabsClosable(1);
-	tabs->resize(this->size().width(),this->height()-ui->menuBar->height());
 	connect(tabs,SIGNAL(tabCloseRequested(int)),this,SLOT(onTabClose(int)));
 	setActionsDisabled();
 	tabs->setStyleSheet("border:0px solid black;");
@@ -31,6 +33,19 @@ void MainWindow::initGui()
 	dialog=new settingsDialog;
 	dialog->setSettings(curentSettings);
 	connect(settings,SIGNAL(triggered()),this,SLOT(openSettingsDialog()));
+	addToolBar(Qt::LeftToolBarArea, createToolBar());
+}
+
+QToolBar* MainWindow::createToolBar()
+{
+	QToolBar* lefttoolbar=new QToolBar("test");
+	lefttoolbar->setMovable(0);
+	lefttoolbar->setMinimumWidth(20);
+	lefttoolbar->addAction("test1");
+	lefttoolbar->addAction("test2");
+	lefttoolbar->addAction("test3");
+	lefttoolbar->addAction("test4");
+	return lefttoolbar;
 }
 
 void MainWindow::loadSettings()
@@ -64,7 +79,10 @@ void MainWindow::setActionsEnabled()
 	ui->actionClose->setEnabled(1);
 }
 
-
+void MainWindow::resizeEvent(QResizeEvent *)
+{
+	tabs->resize(this->size().width(),this->height()-ui->menuBar->height()+1);
+}
 
 MainWindow::~MainWindow()
 {

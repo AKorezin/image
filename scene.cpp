@@ -7,10 +7,7 @@ scene::scene(QObject *parent)  : QGraphicsScene(parent)
 
 /*
 
-void MainWindow::resizeEvent(QResizeEvent *)
-{
-	tabs->resize(this->size().width(),this->height()-ui->menuBar->height()+1);
-}
+
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {

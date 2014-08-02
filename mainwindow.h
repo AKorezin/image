@@ -45,8 +45,9 @@ private:
 	void setActionsDisabled();
 	void setActionsEnabled();
 	void initGui();
+	QToolBar* createToolBar();
 	void loadSettings();
-
+	void resizeEvent(QResizeEvent *);
 	int x,y,flag,loaded;
 	QSettings *curentSettings;
 };

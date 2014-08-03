@@ -23,29 +23,30 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::initGui()
 {
 	ui->setupUi(this);
+
 	this->setWindowTitle("Image");
+
 	tabs=new QTabWidget(ui->centralWidget);
 	tabs->setTabsClosable(1);
 	connect(tabs,SIGNAL(tabCloseRequested(int)),this,SLOT(onTabClose(int)));
 	setActionsDisabled();
 	tabs->setStyleSheet("border:0px solid black;");
+
 	QAction *settings=ui->menuBar->addAction("Настройки");
 	dialog=new settingsDialog;
 	dialog->setSettings(curentSettings);
 	connect(settings,SIGNAL(triggered()),this,SLOT(openSettingsDialog()));
-	addToolBar(Qt::LeftToolBarArea, createToolBar());
+	addToolBar(Qt::LeftToolBarArea, lefttoolbar);
 }
 
-QToolBar* MainWindow::createToolBar()
+void MainWindow::createToolBar()
 {
-	lefttoolbar=new QToolBar("test");
+	lefttoolbar=new QToolBar("lefttoolbar");
 	lefttoolbar->setMovable(0);
-	//lefttoolbar->setMaximumWidth(20);
 	lefttoolbar->addAction(QPixmap(":/circ.png"),"circle");
 	lefttoolbar->addAction(QPixmap(":/line.png"),"line");
 	lefttoolbar->addAction(QPixmap(":/rect.png"),"rect");
 	lefttoolbar->addAction(QPixmap(":/marker.png"),"marker");
-	return lefttoolbar;
 }
 
 void MainWindow::loadSettings()
@@ -98,52 +99,28 @@ void MainWindow::onTabClose(int index)
 		setActionsDisabled();
 }
 
+void MainWindow::on_actionClose_triggered()
+{
+	onTabClose(tabs->currentIndex());
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
 
 	QString filename=QFileDialog::getOpenFileName(this,"Open File","","TIFF Images(*.tiff *.tif);;PNG Images(*.png)");
+	QFile checkfile(filename);
+	if(!checkfile.exists())
+		return;
 	cv::Mat image=cv::imread(filename.toUtf8().data(),CV_LOAD_IMAGE_GRAYSCALE);
 	if(!image.data)
 	{
 		return;
 	}
-	setActionsEnabled();
-	images *newimage=new images(image);
-	scene *pixmap=new scene;
-	scenelist<<pixmap;
-	pixmap->setMainImage(newimage);
-	QGraphicsView *view=new QGraphicsView;
-	view->setScene(pixmap);
-	view->show();
-	tabs->addTab(view,filename);
-
-
-}
-
-void MainWindow::on_actionClose_triggered()
-{
-	delete scenelist[tabs->currentIndex()];
-	scenelist.removeAt(tabs->currentIndex());
-	tabs->removeTab(tabs->currentIndex());
-	if(scenelist.size()==0)
-		setActionsDisabled();
-}
-
-void MainWindow::on_actionExport_triggered()
-{
-	QString filename=QFileDialog::getSaveFileName(this,"Export to matrix","","YAML Files(*.yaml);;XML Files(*.xml);;All Files(*)");
-	QFile checkfile(filename);
-	if(!checkfile.open(QIODevice::WriteOnly | QIODevice::Text))
-		return;
-	checkfile.close();
-	cv::FileStorage file(filename.toUtf8().data(), cv::FileStorage::WRITE);
-	file<<"Image"<<scenelist.at(tabs->currentIndex())->getMainImage()->getCvMat();
-	file.release();
+	displayLoaded(image, filename);
 }
 
 void MainWindow::on_actionImport_triggered()
 {
-
 	QString filename=QFileDialog::getOpenFileName(this,"Import File","","OpenCV Filestorages(*.yaml *.xml);;All Files(*)");
 	QFile checkfile(filename);
 	if(!checkfile.exists())
@@ -156,11 +133,16 @@ void MainWindow::on_actionImport_triggered()
 	{
 		return;
 	}
+	displayLoaded(image,filename);
+}
+
+void MainWindow::displayLoaded(cv::Mat image,QString filename)
+{
 	setActionsEnabled();
 	images *newimage=new images(image);
 	scene *pixmap=new scene;
-	pixmap->setMainImage(newimage);
 	scenelist<<pixmap;
+	pixmap->setMainImage(newimage);
 	QGraphicsView *view=new QGraphicsView;
 	view->setScene(pixmap);
 	view->show();
@@ -188,4 +170,17 @@ void MainWindow::on_actionSaveAs_triggered()
 		return;
 	checkfile.close();
 	cv::imwrite(filename.toUtf8().data(),scenelist.at(tabs->currentIndex())->getMainImage()->getCvMat());
+}
+
+
+void MainWindow::on_actionExport_triggered()
+{
+	QString filename=QFileDialog::getSaveFileName(this,"Export to matrix","","YAML Files(*.yaml);;XML Files(*.xml);;All Files(*)");
+	QFile checkfile(filename);
+	if(!checkfile.open(QIODevice::WriteOnly | QIODevice::Text))
+		return;
+	checkfile.close();
+	cv::FileStorage file(filename.toUtf8().data(), cv::FileStorage::WRITE);
+	file<<"Image"<<scenelist.at(tabs->currentIndex())->getMainImage()->getCvMat();
+	file.release();
 }

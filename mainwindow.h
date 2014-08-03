@@ -48,8 +48,9 @@ private:
 	void setActionsDisabled();
 	void setActionsEnabled();
 	void initGui();
-	QToolBar* createToolBar();
+	void createToolBar();
 	void loadSettings();
+	void displayLoaded(cv::Mat,QString);
 	void resizeEvent(QResizeEvent *);
 	int x,y,flag,loaded;
 	QSettings *curentSettings;

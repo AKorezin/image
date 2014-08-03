@@ -27,3 +27,6 @@ FORMS    += mainwindow.ui \
     settingsdialog.ui
 INCLUDEPATH += /usr/include/opencv
 LIBS += `pkg-config opencv --cflags --libs`
+
+RESOURCES += \
+    icons.qrc

@@ -1,8 +1,21 @@
 #include "scene.h"
-
+#include "QDebug"
 scene::scene(QObject *parent)  : QGraphicsScene(parent)
 {
 
+}
+images* scene::getMainImage()
+{
+	return mainimage;
+}
+void scene::setMainImage(images *image)
+{
+	mainimage=image;
+	addPixmap(mainimage->getPixmap());
+}
+scene::~scene()
+{
+	delete mainimage;
 }
 
 /*

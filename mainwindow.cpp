@@ -38,13 +38,13 @@ void MainWindow::initGui()
 
 QToolBar* MainWindow::createToolBar()
 {
-	QToolBar* lefttoolbar=new QToolBar("test");
+	lefttoolbar=new QToolBar("test");
 	lefttoolbar->setMovable(0);
-	lefttoolbar->setMinimumWidth(20);
-	lefttoolbar->addAction("test1");
-	lefttoolbar->addAction("test2");
-	lefttoolbar->addAction("test3");
-	lefttoolbar->addAction("test4");
+	//lefttoolbar->setMaximumWidth(20);
+	lefttoolbar->addAction(QPixmap(":/circ.png"),"circle");
+	lefttoolbar->addAction(QPixmap(":/line.png"),"line");
+	lefttoolbar->addAction(QPixmap(":/rect.png"),"rect");
+	lefttoolbar->addAction(QPixmap(":/marker.png"),"marker");
 	return lefttoolbar;
 }
 
@@ -81,7 +81,7 @@ void MainWindow::setActionsEnabled()
 
 void MainWindow::resizeEvent(QResizeEvent *)
 {
-	tabs->resize(this->size().width(),this->height()-ui->menuBar->height()+1);
+	tabs->resize(this->size().width()-this->lefttoolbar->width(),this->height()-ui->menuBar->height()+1);
 }
 
 MainWindow::~MainWindow()
@@ -91,9 +91,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::onTabClose(int index)
 {
-	imagelist.removeAt(index);
+	delete scenelist[tabs->currentIndex()];
+	scenelist.removeAt(index);
 	tabs->removeTab(index);
-	if(imagelist.size()==0)
+	if(scenelist.size()==0)
 		setActionsDisabled();
 }
 
@@ -108,9 +109,9 @@ void MainWindow::on_actionOpen_triggered()
 	}
 	setActionsEnabled();
 	images *newimage=new images(image);
-	imagelist<<newimage;
 	scene *pixmap=new scene;
-	pixmap->addPixmap(newimage->getPixmap());
+	scenelist<<pixmap;
+	pixmap->setMainImage(newimage);
 	QGraphicsView *view=new QGraphicsView;
 	view->setScene(pixmap);
 	view->show();
@@ -121,9 +122,10 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionClose_triggered()
 {
-	imagelist.removeAt(tabs->currentIndex());
+	delete scenelist[tabs->currentIndex()];
+	scenelist.removeAt(tabs->currentIndex());
 	tabs->removeTab(tabs->currentIndex());
-	if(imagelist.size()==0)
+	if(scenelist.size()==0)
 		setActionsDisabled();
 }
 
@@ -135,7 +137,7 @@ void MainWindow::on_actionExport_triggered()
 		return;
 	checkfile.close();
 	cv::FileStorage file(filename.toUtf8().data(), cv::FileStorage::WRITE);
-	file<<"Image"<<imagelist.at(tabs->currentIndex())->getCvMat();
+	file<<"Image"<<scenelist.at(tabs->currentIndex())->getMainImage()->getCvMat();
 	file.release();
 }
 
@@ -156,9 +158,9 @@ void MainWindow::on_actionImport_triggered()
 	}
 	setActionsEnabled();
 	images *newimage=new images(image);
-	imagelist<<newimage;
 	scene *pixmap=new scene;
-	pixmap->addPixmap(newimage->getPixmap());
+	pixmap->setMainImage(newimage);
+	scenelist<<pixmap;
 	QGraphicsView *view=new QGraphicsView;
 	view->setScene(pixmap);
 	view->show();
@@ -172,7 +174,7 @@ void MainWindow::on_actionSave_triggered()
 	if((filename.endsWith("tiff",Qt::CaseInsensitive) or filename.endsWith("tif",Qt::CaseInsensitive)) and checkfile.open(QIODevice::WriteOnly | QIODevice::Text))
 	{
 		checkfile.close();
-		cv::imwrite(filename.toUtf8().data(),imagelist.at(tabs->currentIndex())->getCvMat());
+		cv::imwrite(filename.toUtf8().data(),scenelist.at(tabs->currentIndex())->getMainImage()->getCvMat());
 	}
 	else
 		on_actionSaveAs_triggered();
@@ -185,5 +187,5 @@ void MainWindow::on_actionSaveAs_triggered()
 	if(!checkfile.open(QIODevice::WriteOnly | QIODevice::Text))
 		return;
 	checkfile.close();
-	cv::imwrite(filename.toUtf8().data(),imagelist.at(tabs->currentIndex())->getCvMat());
+	cv::imwrite(filename.toUtf8().data(),scenelist.at(tabs->currentIndex())->getMainImage()->getCvMat());
 }

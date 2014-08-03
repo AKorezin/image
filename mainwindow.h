@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "QList"
 #include "QSettings"
+#include "scene.h"
 #include "images.h"
 #include "settingsdialog.h"
 namespace Ui {
@@ -40,8 +41,10 @@ private slots:
 private:
 	Ui::MainWindow *ui;
 	QList<images*> imagelist;
+	QList<scene *> scenelist;
 	QTabWidget *tabs;
 	settingsDialog *dialog;
+	QToolBar* lefttoolbar;
 	void setActionsDisabled();
 	void setActionsEnabled();
 	void initGui();

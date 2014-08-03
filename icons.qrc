@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>circ.png</file>
+        <file>line.png</file>
+        <file>marker.png</file>
+        <file>rect.png</file>
+    </qresource>
+</RCC>

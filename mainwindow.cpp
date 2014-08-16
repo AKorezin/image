@@ -23,19 +23,17 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::initGui()
 {
 	ui->setupUi(this);
-
 	this->setWindowTitle("Image");
-
 	tabs=new QTabWidget(ui->centralWidget);
 	tabs->setTabsClosable(1);
 	connect(tabs,SIGNAL(tabCloseRequested(int)),this,SLOT(onTabClose(int)));
 	setActionsDisabled();
 	tabs->setStyleSheet("border:0px solid black;");
-
 	QAction *settings=ui->menuBar->addAction("Настройки");
 	dialog=new settingsDialog;
 	dialog->setSettings(curentSettings);
 	connect(settings,SIGNAL(triggered()),this,SLOT(openSettingsDialog()));
+	createToolBar();
 	addToolBar(Qt::LeftToolBarArea, lefttoolbar);
 }
 
@@ -82,7 +80,7 @@ void MainWindow::setActionsEnabled()
 
 void MainWindow::resizeEvent(QResizeEvent *)
 {
-	tabs->resize(this->size().width()-this->lefttoolbar->width(),this->height()-ui->menuBar->height()+1);
+	tabs->resize(this->size().width()-this->lefttoolbar->width(),this->size().height()-ui->menuBar->height()+1);
 }
 
 MainWindow::~MainWindow()

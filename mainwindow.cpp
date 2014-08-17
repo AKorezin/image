@@ -4,9 +4,9 @@
 #include "QFileDialog"
 #include "QLabel"
 #include "QMouseEvent"
-#include "QGraphicsView"
 #include "QToolBar"
 #include "settingsdialog.h"
+#include "view.h"
 #include "QDebug"
 #include "QActionGroup"
 #include "opencv2/highgui/highgui.hpp"
@@ -156,10 +156,10 @@ void MainWindow::displayLoaded(cv::Mat image,QString filename)
 	scene *pixmap=new scene;
 	scenelist<<pixmap;
 	pixmap->setMainImage(newimage);
-	QGraphicsView *view=new QGraphicsView;
-	view->setScene(pixmap);
-	view->show();
-	tabs->addTab(view,filename);
+	view *newview=new view;
+	newview->setScene(pixmap);
+	newview->show();
+	tabs->addTab(newview,filename);
 }
 
 void MainWindow::on_actionSave_triggered()

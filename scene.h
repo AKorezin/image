@@ -11,7 +11,9 @@ public:
 	images* getMainImage();
 private:
 	images* mainimage;
-
+	void mousePressEvent(QGraphicsSceneMouseEvent *);
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
+	void mouseMoveEvent(QGraphicsSceneMouseEvent *);
 };
 
 #endif // SCENE_H

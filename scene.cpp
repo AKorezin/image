@@ -13,20 +13,20 @@ void scene::setMainImage(images *image)
 {
 	mainimage=image;
 	addPixmap(mainimage->getPixmap());
-	qDebug()<<currenttool;
 }
 scene::~scene()
 {
 	delete mainimage;
 }
 
-/*
 
 
 
-void MainWindow::mouseMoveEvent(QMouseEvent *event)
+
+void scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-
+	qDebug()<<"1";
+	/*
 	if(event->buttons() & Qt::MidButton)
 	{
 		QWidget *drager=tabs->currentWidget();
@@ -41,15 +41,15 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 			y=event->y();
 			flag=1;
 		}
-	}
+	}*/
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent * event)
+void scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	if((event->button() == Qt::MidButton) && flag)
-	{
-		qDebug()<<"release";
-		flag=0;
-	}
+	qDebug()<<"2";
 }
-*/
+
+void scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	qDebug()<<"3";
+}

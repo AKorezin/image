@@ -10,6 +10,7 @@ private:
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
+	void wheelEvent(QWheelEvent* event);
 
 	bool _pan;
 	int _panStartX, _panStartY;

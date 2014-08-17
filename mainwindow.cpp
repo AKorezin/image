@@ -8,8 +8,9 @@
 #include "QToolBar"
 #include "settingsdialog.h"
 #include "QDebug"
+#include "QActionGroup"
 #include "opencv2/highgui/highgui.hpp"
-
+int currenttool=-1;
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
@@ -35,16 +36,30 @@ void MainWindow::initGui()
 	connect(settings,SIGNAL(triggered()),this,SLOT(openSettingsDialog()));
 	createToolBar();
 	addToolBar(Qt::LeftToolBarArea, lefttoolbar);
+
+
 }
 
 void MainWindow::createToolBar()
 {
-	lefttoolbar=new QToolBar("lefttoolbar");
+	lefttoolbar = new QToolBar("lefttoolbar");
 	lefttoolbar->setMovable(0);
-	lefttoolbar->addAction(QPixmap(":/circ.png"),"circle");
-	lefttoolbar->addAction(QPixmap(":/line.png"),"line");
-	lefttoolbar->addAction(QPixmap(":/rect.png"),"rect");
-	lefttoolbar->addAction(QPixmap(":/marker.png"),"marker");
+	actiongroup = new QActionGroup(lefttoolbar);
+	actiongroup->addAction(QIcon(":/circ.png"),"Line");
+	actiongroup->addAction(QIcon(":/line.png"),"Circle");
+	actiongroup->addAction(QIcon(":/rect.png"),"Rectangle");
+	actiongroup->addAction(QIcon(":/marker.png"),"Marker");
+	lefttoolbar->addActions(actiongroup->actions());
+	foreach(QAction *action, actiongroup->actions())
+	{
+		action->setCheckable(true);
+	}
+	connect(actiongroup,SIGNAL(triggered(QAction*)),this,SLOT(actionGroupChecked(QAction*)));
+}
+
+void MainWindow::actionGroupChecked(QAction * activeAction)
+{
+	currenttool=actiongroup->actions().indexOf(activeAction);
 }
 
 void MainWindow::loadSettings()

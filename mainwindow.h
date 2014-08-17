@@ -4,9 +4,11 @@
 #include <QMainWindow>
 #include "QList"
 #include "QSettings"
+#include "QActionGroup"
 #include "scene.h"
 #include "images.h"
 #include "settingsdialog.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -38,10 +40,13 @@ private slots:
 	void openSettingsDialog();
 
 	void saveSettings();
+
+	void actionGroupChecked(QAction *);
 private:
 	Ui::MainWindow *ui;
 	QList<images*> imagelist;
 	QList<scene *> scenelist;
+	QActionGroup* actiongroup;
 	QTabWidget *tabs;
 	settingsDialog *dialog;
 	QToolBar* lefttoolbar;
@@ -52,6 +57,7 @@ private:
 	void loadSettings();
 	void displayLoaded(cv::Mat,QString);
 	void resizeEvent(QResizeEvent *);
+	void uncheckToolbar();
 	int x,y,flag,loaded;
 	QSettings *curentSettings;
 };

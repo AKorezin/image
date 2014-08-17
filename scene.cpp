@@ -1,5 +1,6 @@
 #include "scene.h"
 #include "QDebug"
+extern int currenttool;
 scene::scene(QObject *parent)  : QGraphicsScene(parent)
 {
 
@@ -12,6 +13,7 @@ void scene::setMainImage(images *image)
 {
 	mainimage=image;
 	addPixmap(mainimage->getPixmap());
+	qDebug()<<currenttool;
 }
 scene::~scene()
 {

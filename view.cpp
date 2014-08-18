@@ -5,7 +5,8 @@
 #include "QDebug"
 view::view(QWidget *parent) : QGraphicsView(parent)
 {
-
+	//setTransformationAnchor(QGraphicsView::NoAnchor);
+	//setResizeAnchor(QGraphicsView::NoAnchor);
 	//setSceneRect();
 }
 
@@ -55,12 +56,26 @@ void view::wheelEvent(QWheelEvent *event)
 	if(event->modifiers()==Qt::ControlModifier)
 	{
 		//setResizeAnchor(QGraphicsView::AnchorUnderMouse);
-		centerOn(mapToScene(event->pos()));
-		double scaleFactor = pow((double)2, event->delta() / 300.0);
+
+		double scaleFactor = pow((double)2, event->delta() / 3000.0);
 		qreal factor = matrix().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
 		if (factor < 0.07 || factor > 100)
 			return;
+
+		//qDebug()<<delta;
+		//translate(oldpoint.x(),oldpoint.y());
+
+		QPointF center= mapToScene(QPoint(viewport()->width() / 2.0, viewport()->height() / 2.0));
+		QPointF mouse=mapToScene(event->pos());
 		scale(scaleFactor, scaleFactor);
+		QPointF delta=center-mouse;
+
+		//QPointF center = mapFromScene(mapToScene(event->pos())) - delta;
+		qDebug()<<delta;
+		//centerOn();
+
+		//centerOn(mapToScene(event->pos()));
+		//translate(oldpoint.x(),oldpoint.y());
 
 	}
 }

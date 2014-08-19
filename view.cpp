@@ -55,28 +55,16 @@ void view::wheelEvent(QWheelEvent *event)
 
 	if(event->modifiers()==Qt::ControlModifier)
 	{
-		//setResizeAnchor(QGraphicsView::AnchorUnderMouse);
-
-		double scaleFactor = pow((double)2, event->delta() / 3000.0);
+		double scaleFactor = pow((double)2, event->delta() / 300.0);
 		qreal factor = matrix().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
-		if (factor < 0.07 || factor > 100)
+		if (factor < 0.02 || factor > 100)
 			return;
-
-		//qDebug()<<delta;
-		//translate(oldpoint.x(),oldpoint.y());
-
 		QPointF center= mapToScene(QPoint(viewport()->width() / 2.0, viewport()->height() / 2.0));
 		QPointF mouse=mapToScene(event->pos());
 		scale(scaleFactor, scaleFactor);
-		QPointF delta=center-mouse;
-
-		//QPointF center = mapFromScene(mapToScene(event->pos())) - delta;
-		qDebug()<<delta;
-		//centerOn();
-
-		//centerOn(mapToScene(event->pos()));
-		//translate(oldpoint.x(),oldpoint.y());
-
+		QPointF mouse1=mapToScene(event->pos());
+		QPointF delta=mouse-mouse1;
+		centerOn(center+delta);
 	}
 }
 

@@ -6,7 +6,7 @@
 view::view(QWidget *parent) : QGraphicsView(parent)
 {
 	//setTransformationAnchor(QGraphicsView::NoAnchor);
-	//setResizeAnchor(QGraphicsView::NoAnchor);
+	setResizeAnchor(QGraphicsView::NoAnchor);
 	//setSceneRect();
 }
 
@@ -35,7 +35,9 @@ void view::mousePressEvent(QMouseEvent *event)
 		event->accept();
 		return;
 	}
-	event->ignore();
+	//QGraphicsScene::sendEvent(scene(),event);
+	//event->ignore();
+	QGraphicsView::mousePressEvent(event);
 }
 
 void view::mouseReleaseEvent(QMouseEvent *event)
@@ -47,7 +49,11 @@ void view::mouseReleaseEvent(QMouseEvent *event)
 		event->accept();
 		return;
 	}
-	event->ignore();
+	//qDebug()<<"1";
+	//event->ignore();
+	//QGraphicsScene::sendEvent(scene(),event);
+	QGraphicsView::mouseReleaseEvent(event);
+
 }
 
 void view::wheelEvent(QWheelEvent *event)
@@ -55,7 +61,7 @@ void view::wheelEvent(QWheelEvent *event)
 
 	if(event->modifiers()==Qt::ControlModifier)
 	{
-		double scaleFactor = pow((double)2, event->delta() / 300.0);
+		double scaleFactor = pow((double)2, event->delta() / 450.0);
 		qreal factor = matrix().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
 		if (factor < 0.02 || factor > 100)
 			return;
@@ -66,6 +72,7 @@ void view::wheelEvent(QWheelEvent *event)
 		QPointF delta=mouse-mouse1;
 		centerOn(center+delta);
 	}
+
 }
 
 

@@ -46,10 +46,18 @@ void scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+	QPen pen;
+	pen.setWidth(0);
+	QBrush brush;
+	addRect(10,10,50,50,pen,brush);
 	qDebug()<<"2";
 }
 
 void scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+	QPen pen;
+	pen.setWidth(0);
+	QBrush brush;
+	addRect(10,10,50,50,pen,brush);
 	qDebug()<<"3";
 }

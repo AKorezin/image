@@ -17,6 +17,10 @@ private:
 	void mousePressEvent(QGraphicsSceneMouseEvent *);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *);
+	void drawRect(QPoint,QPoint);
+	/*void drawLine();
+	void drawCirc();
+	void drawMark();*/
 };
 
 #endif // SCENE_H

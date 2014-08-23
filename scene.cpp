@@ -6,7 +6,7 @@ extern int currenttool;
 scene::scene(QObject *parent)  : QGraphicsScene(parent)
 {
 	selecting=false;
-	rect=new QGraphicsRectItem;
+	rect=NULL;
 }
 images* scene::getMainImage()
 {
@@ -21,10 +21,20 @@ void scene::setMainImage(images *image)
 scene::~scene()
 {
 	delete mainimage;
-	delete rect;
+	//delete rect;
 }
 
+void scene::drawRect(QPoint start,QPoint now)
+{
+	QPoint delta=(now-start);
+	QPoint topleft=start;
+	if(delta.x()<0)
+		topleft.setX(topleft.x()+delta.x());
+	if(delta.y()<0)
+		topleft.setY(topleft.y()+delta.y());
 
+	rect->setRect(topleft.x(),topleft.y(),abs(delta.x()),abs(delta.y()));
+}
 
 
 
@@ -32,36 +42,40 @@ void scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
 	if(selecting)
 	{
-
-		QPoint delta=(event->scenePos().toPoint()-start);
-		if(delta.x()<0 or delta.y()<0)
-			rect->setRect(start.x()+delta.x(),start.y()+delta.y(),-delta.x(),-delta.y());
-		else
-			rect->setRect(start.x(),start.y(),delta.x(),delta.y());
-		qDebug()<<rect->rect();
+		drawRect(start,event->scenePos().toPoint());
 	}
 }
 
 void scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	if(selecting and event->button()==Qt::LeftButton)
-		 selecting=false;
+		selecting=false;
 	qDebug()<<"2";
 }
+
 
 void scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	if(event->button()==Qt::LeftButton)
 	{
-		//qDebug()<<rect;
 		if(rect!=NULL)
 			removeItem(rect);
-		selecting=true;
+
 		QPen pen;
 		pen.setWidth(0);
 		QBrush brush;
 		start=event->scenePos().toPoint();
-		rect=addRect(start.x(),start.y(),0,0,pen,brush);
+
+
+		switch (currenttool) {
+		case 2:
+			rect=addRect(start.x(),start.y(),0,0,pen,brush);
+			selecting=true;
+			break;
+		default:
+			break;
+		}
+
 	}
 	qDebug()<<"3";
 }

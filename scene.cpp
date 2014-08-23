@@ -6,6 +6,7 @@ extern int currenttool;
 scene::scene(QObject *parent)  : QGraphicsScene(parent)
 {
 	selecting=false;
+	rect=new QGraphicsRectItem;
 }
 images* scene::getMainImage()
 {
@@ -15,10 +16,12 @@ void scene::setMainImage(images *image)
 {
 	mainimage=image;
 	addPixmap(mainimage->getPixmap());
+	setSceneRect(0,0,mainimage->getPixmap().size().width(),mainimage->getPixmap().size().height());
 }
 scene::~scene()
 {
 	delete mainimage;
+	delete rect;
 }
 
 
@@ -27,11 +30,15 @@ scene::~scene()
 
 void scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-	//qDebug()<<event->scenePos();
 	if(selecting)
 	{
+
 		QPoint delta=(event->scenePos().toPoint()-start);
-		rect->setRect(start.x(),start.y(),delta.x(),delta.y());
+		if(delta.x()<0 or delta.y()<0)
+			rect->setRect(start.x()+delta.x(),start.y()+delta.y(),-delta.x(),-delta.y());
+		else
+			rect->setRect(start.x(),start.y(),delta.x(),delta.y());
+		qDebug()<<rect->rect();
 	}
 }
 
@@ -46,6 +53,9 @@ void scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	if(event->button()==Qt::LeftButton)
 	{
+		//qDebug()<<rect;
+		if(rect!=NULL)
+			removeItem(rect);
 		selecting=true;
 		QPen pen;
 		pen.setWidth(0);

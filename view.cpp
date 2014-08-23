@@ -6,10 +6,6 @@
 view::view(QWidget *parent) : QGraphicsView(parent)
 {
 	_pan=false;
-	//setDragMode(QGraphicsView::NoDrag);
-	//setTransformationAnchor(QGraphicsView::NoAnchor);
-	//setResizeAnchor(QGraphicsView::NoAnchor);
-	//setSceneRect();
 }
 
 void view::mouseMoveEvent(QMouseEvent *event)
@@ -57,9 +53,6 @@ void view::mouseReleaseEvent(QMouseEvent *event)
 		event->accept();
 		return;
 	}
-	//qDebug()<<"1";
-	//event->ignore();
-	//QGraphicsScene::sendEvent(scene(),event);
 	if(!_pan)
 	{
 		event->ignore();
@@ -69,7 +62,6 @@ void view::mouseReleaseEvent(QMouseEvent *event)
 
 void view::wheelEvent(QWheelEvent *event)
 {
-	qDebug()<<event->buttons()<<"wheel";
 	if(event->modifiers()==Qt::ControlModifier)
 	{
 		double scaleFactor = pow((double)2, event->delta() / 450.0);

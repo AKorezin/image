@@ -5,8 +5,10 @@
 #include "QDebug"
 view::view(QWidget *parent) : QGraphicsView(parent)
 {
+	_pan=false;
+	//setDragMode(QGraphicsView::NoDrag);
 	//setTransformationAnchor(QGraphicsView::NoAnchor);
-	setResizeAnchor(QGraphicsView::NoAnchor);
+	//setResizeAnchor(QGraphicsView::NoAnchor);
 	//setSceneRect();
 }
 
@@ -21,7 +23,11 @@ void view::mouseMoveEvent(QMouseEvent *event)
 		event->accept();
 		return;
 	}
-	event->ignore();
+	else
+	{
+		event->ignore();
+		QGraphicsView::mouseMoveEvent(event);
+	}
 }
 
 void view::mousePressEvent(QMouseEvent *event)
@@ -35,9 +41,11 @@ void view::mousePressEvent(QMouseEvent *event)
 		event->accept();
 		return;
 	}
-	//QGraphicsScene::sendEvent(scene(),event);
-	//event->ignore();
-	QGraphicsView::mousePressEvent(event);
+	if(!_pan)
+	{
+		event->ignore();
+		QGraphicsView::mousePressEvent(event);
+	}
 }
 
 void view::mouseReleaseEvent(QMouseEvent *event)
@@ -52,13 +60,16 @@ void view::mouseReleaseEvent(QMouseEvent *event)
 	//qDebug()<<"1";
 	//event->ignore();
 	//QGraphicsScene::sendEvent(scene(),event);
-	QGraphicsView::mouseReleaseEvent(event);
-
+	if(!_pan)
+	{
+		event->ignore();
+		QGraphicsView::mouseReleaseEvent(event);
+	}
 }
 
 void view::wheelEvent(QWheelEvent *event)
 {
-
+	qDebug()<<event->buttons()<<"wheel";
 	if(event->modifiers()==Qt::ControlModifier)
 	{
 		double scaleFactor = pow((double)2, event->delta() / 450.0);

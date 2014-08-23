@@ -1,9 +1,11 @@
 #include "scene.h"
+#include "QGraphicsSceneEvent"
+#include "QGraphicsRectItem"
 #include "QDebug"
 extern int currenttool;
 scene::scene(QObject *parent)  : QGraphicsScene(parent)
 {
-
+	selecting=false;
 }
 images* scene::getMainImage()
 {
@@ -25,39 +27,31 @@ scene::~scene()
 
 void scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-	qDebug()<<"1";
-	/*
-	if(event->buttons() & Qt::MidButton)
+	//qDebug()<<event->scenePos();
+	if(selecting)
 	{
-		QWidget *drager=tabs->currentWidget();
-		int dx=event->x()-x,dy=event->y()-y;
-
-		if(drager!=NULL)
-		{
-			qDebug()<<drager;
-			if(flag)
-				drager->move(drager->x()+dx,drager->y()+dy);
-			x=event->x();
-			y=event->y();
-			flag=1;
-		}
-	}*/
+		QPoint delta=(event->scenePos().toPoint()-start);
+		rect->setRect(start.x(),start.y(),delta.x(),delta.y());
+	}
 }
 
 void scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	QPen pen;
-	pen.setWidth(0);
-	QBrush brush;
-	addRect(10,10,50,50,pen,brush);
+	if(selecting and event->button()==Qt::LeftButton)
+		 selecting=false;
 	qDebug()<<"2";
 }
 
 void scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	QPen pen;
-	pen.setWidth(0);
-	QBrush brush;
-	addRect(10,10,50,50,pen,brush);
+	if(event->button()==Qt::LeftButton)
+	{
+		selecting=true;
+		QPen pen;
+		pen.setWidth(0);
+		QBrush brush;
+		start=event->scenePos().toPoint();
+		rect=addRect(start.x(),start.y(),0,0,pen,brush);
+	}
 	qDebug()<<"3";
 }

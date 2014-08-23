@@ -11,6 +11,9 @@ public:
 	images* getMainImage();
 private:
 	images* mainimage;
+	QPoint start;
+	QGraphicsRectItem *rect;
+	bool selecting;
 	void mousePressEvent(QGraphicsSceneMouseEvent *);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *);

@@ -17,6 +17,7 @@ private:
 	images* mainimage;
 	QPoint start;
 	QGraphicsRectItem *rect;
+	QList<QGraphicsEllipseItem *> corners;
 	bool selecting;
 	void mousePressEvent(QGraphicsSceneMouseEvent *);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *);

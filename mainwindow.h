@@ -41,6 +41,8 @@ private slots:
 
 	void saveSettings();
 
+	void exportSelected();
+
 	void actionGroupChecked(QAction *);
 private:
 	Ui::MainWindow *ui;

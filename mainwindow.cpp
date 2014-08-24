@@ -72,6 +72,19 @@ void MainWindow::saveSettings()
 
 }
 
+void MainWindow::exportSelected()
+{
+	QString filename=QFileDialog::getSaveFileName(this,"Export to matrix","","YAML Files(*.yaml);;XML Files(*.xml);;All Files(*)");
+	QFile checkfile(filename);
+	if(!checkfile.open(QIODevice::WriteOnly | QIODevice::Text))
+		return;
+	checkfile.close();
+	cv::FileStorage file(filename.toUtf8().data(), cv::FileStorage::WRITE);
+	file<<"Image"<<scenelist.at(tabs->currentIndex())->getSelected();
+	file.release();
+
+}
+
 void MainWindow::openSettingsDialog()
 {
 	connect(dialog,SIGNAL(accepted()),this,SLOT(saveSettings()));
@@ -159,6 +172,7 @@ void MainWindow::displayLoaded(cv::Mat image,QString filename)
 	view *newview=new view;
 	newview->setScene(pixmap);
 	newview->show();
+	connect(newview,SIGNAL(export_triggered()),this,SLOT(exportSelected()));
 	tabs->addTab(newview,filename);
 }
 

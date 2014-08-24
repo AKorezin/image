@@ -1,6 +1,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 #include "QGraphicsScene"
+
 #include "images.h"
 class scene : public QGraphicsScene
 {
@@ -9,6 +10,9 @@ public:
 	~scene();
 	void setMainImage(images *);
 	images* getMainImage();
+	cv::Mat getSelected();
+public slots:
+	void exportcurrent();
 private:
 	images* mainimage;
 	QPoint start;
@@ -18,6 +22,7 @@ private:
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *);
 	void drawRect(QPoint,QPoint);
+
 	/*void drawLine();
 	void drawCirc();
 	void drawMark();*/

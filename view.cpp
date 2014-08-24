@@ -1,11 +1,13 @@
 #include "view.h"
 #include "scene.h"
+#include "QMenu"
 #include "QMouseEvent"
 #include "QScrollBar"
 #include "QDebug"
 view::view(QWidget *parent) : QGraphicsView(parent)
 {
 	_pan=false;
+	setMouseTracking(true);
 }
 
 void view::mouseMoveEvent(QMouseEvent *event)
@@ -64,7 +66,7 @@ void view::wheelEvent(QWheelEvent *event)
 {
 	if(event->modifiers()==Qt::ControlModifier)
 	{
-		double scaleFactor = pow((double)2, event->delta() / 450.0);
+		double scaleFactor = pow((double)2, event->delta() / 300.0);
 		qreal factor = matrix().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width();
 		if (factor < 0.02 || factor > 100)
 			return;
@@ -76,6 +78,15 @@ void view::wheelEvent(QWheelEvent *event)
 		centerOn(center+delta);
 	}
 
+}
+
+void view::contextMenuEvent(QContextMenuEvent *event)
+{
+	QMenu menu(this);
+	menu.addAction("Экспортировать выделенную область");
+	connect(menu.actions().at(0),SIGNAL(triggered()),this,SIGNAL(export_triggered()));
+	//emit export_triggered();
+	menu.exec(event->globalPos());
 }
 
 

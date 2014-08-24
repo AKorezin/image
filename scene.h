@@ -23,7 +23,6 @@ private:
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *);
 	void drawRect(QPoint,QPoint);
-
 	/*void drawLine();
 	void drawCirc();
 	void drawMark();*/

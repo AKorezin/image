@@ -73,10 +73,24 @@ void scene::drawRect(QPoint start,QPoint now)
 	if(delta.y()<0)
 		topleft.setY(topleft.y()+delta.y());
 	rect->setRect(topleft.x(),topleft.y(),abs(delta.x()),abs(delta.y()));
-	/*rect->childItems().at(0)->setPos(0,0);
-	rect->childItems().at(1)->setPos(0,delta.y());
-	rect->childItems().at(2)->setPos(delta.x(),0);
-	rect->childItems().at(3)->setPos(delta.x(),delta.y());*/
+
+	switch (tool) {
+	case 0:
+		rect->childItems().at(0)->update();
+		break;
+	case 1:
+		break;
+	case 2:
+		/*rect->childItems().at(0)->setPos(0,0);
+		rect->childItems().at(1)->setPos(0,delta.y());
+		rect->childItems().at(2)->setPos(delta.x(),0);
+		rect->childItems().at(3)->setPos(delta.x(),delta.y());*/
+		break;
+	case 3:
+		break;
+	default:
+		break;
+	}
 
 }
 
@@ -87,7 +101,7 @@ void scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	//qDebug()<<"1";
 	if(selecting)
 	{
-		switch (currenttool) {
+		switch (tool) {
 		case 0:
 			drawRect(start,event->scenePos().toPoint());
 			break;
@@ -127,10 +141,16 @@ void scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		pen.setColor(Qt::red);
 		QBrush brush;
 		start=event->scenePos().toPoint();
+		tool=currenttool;
 		switch (currenttool) {
 		case 0:
 			rect=addRect(start.x(),start.y(),0,0,pen,brush);
+			if(rect)
+			{
+				QGraphicsEllipseItem* ellipse=new QGraphicsEllipseItem(rect);
+			}
 			selecting=true;
+
 			break;
 		case 1:
 			break;
@@ -138,7 +158,7 @@ void scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 			rect=addRect(start.x(),start.y(),0,0,pen,brush);
 			for(int i=0;i<4;i++)
 			{
-				QGraphicsRectItem *corner=new QGraphicsRectItem(start.x(),start.y(),rect->rect().width()/3,rect->rect().height()/3,rect);
+				QGraphicsEllipseItem *corner=new QGraphicsEllipseItem(start.x()-3,start.y()-3,3,3,rect);
 				corner->setPen(pen);
 			}
 			selecting=true;

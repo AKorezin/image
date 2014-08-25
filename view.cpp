@@ -85,7 +85,6 @@ void view::contextMenuEvent(QContextMenuEvent *event)
 	QMenu menu(this);
 	menu.addAction("Экспортировать выделенную область");
 	connect(menu.actions().at(0),SIGNAL(triggered()),this,SIGNAL(export_triggered()));
-	//emit export_triggered();
 	menu.exec(event->globalPos());
 }
 

@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     images.cpp \
     scene.cpp \
     settingsdialog.cpp \
-    view.cpp
+    view.cpp \
+    selectionitem.cpp
 
 HEADERS  += mainwindow.h \
     images.h \
     scene.h \
     settingsdialog.h \
-    view.h
+    view.h \
+    selectionitem.h
 
 FORMS    += mainwindow.ui \
     settingsdialog.ui

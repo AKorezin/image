@@ -78,6 +78,7 @@ void view::wheelEvent(QWheelEvent *event)
 		QPointF mouse1=mapToScene(event->pos());
 		QPointF delta=mouse-mouse1;
 		centerOn(center+delta);
+		emit scaleChanged(scaleFactor);
 	}
 
 }

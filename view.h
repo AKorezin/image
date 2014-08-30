@@ -10,6 +10,7 @@ public:
 	view(QWidget *parent = 0);
 signals:
 	void export_triggered();
+	void scaleChanged(double);
 private:
 
 	void mouseMoveEvent(QMouseEvent *event);

@@ -170,6 +170,7 @@ void MainWindow::displayLoaded(cv::Mat image,QString filename)
 	scenelist<<pixmap;
 	pixmap->setMainImage(newimage);
 	view *newview=new view;
+	connect(newview,SIGNAL(scaleChanged(double)),pixmap,SLOT(setScale(double)));
 	newview->setScene(pixmap);
 	newview->show();
 	connect(newview,SIGNAL(export_triggered()),this,SLOT(exportSelected()));

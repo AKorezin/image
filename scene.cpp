@@ -11,6 +11,9 @@ scene::scene(QObject *parent)  : QGraphicsScene(parent)
 	rect=NULL;
 	ellipse=NULL;
 	line=NULL;
+	handlew=8;
+	handleh=8;
+	penwidth=2;
 }
 images* scene::getMainImage()
 {
@@ -59,10 +62,10 @@ void scene::drawRect(QPoint start,QPoint now)
 	if(delta.y()<0)
 		topleft.setY(topleft.y()+delta.y());
 	rect->setRect(topleft.x(),topleft.y(),abs(delta.x()),abs(delta.y()));
-
-	handles.at(1)->setPos(0,delta.y());
-	handles.at(2)->setPos(delta.x(),0);
-	handles.at(3)->setPos(delta);
+	handles.at(0)->setRect(topleft.x()-handlew/2,topleft.y()-handleh/2,handlew,handleh);
+	handles.at(1)->setRect(topleft.x()-handlew/2,topleft.y()+abs(delta.y())-handleh/2,handlew,handleh);
+	handles.at(2)->setRect(topleft.x()+abs(delta.x())-handlew/2,topleft.y()+abs(delta.y())-handleh/2,handlew,handleh);
+	handles.at(3)->setRect(topleft.x()+abs(delta.x())-handlew/2,topleft.y()-handleh/2,handlew,handleh);
 }
 
 void scene::drawEllipse(QPoint start, QPoint now)
@@ -75,20 +78,39 @@ void scene::drawEllipse(QPoint start, QPoint now)
 		topleft.setY(topleft.y()+delta.y());
 	rect->setRect(topleft.x(),topleft.y(),abs(delta.x()),abs(delta.y()));
 	ellipse->setRect(rect->rect());
-	handles.at(1)->setPos(0,delta.y());
-	handles.at(2)->setPos(delta.x(),0);
-	handles.at(3)->setPos(delta);
+	handles.at(0)->setRect(topleft.x()-handlew/2,topleft.y()-handleh/2,handlew,handleh);
+	handles.at(1)->setRect(topleft.x()-handlew/2,topleft.y()+abs(delta.y())-handleh/2,handlew,handleh);
+	handles.at(2)->setRect(topleft.x()+abs(delta.x())-handlew/2,topleft.y()+abs(delta.y())-handleh/2,handlew,handleh);
+	handles.at(3)->setRect(topleft.x()+abs(delta.x())-handlew/2,topleft.y()-handleh/2,handlew,handleh);
+
 }
 
 void scene::drawLine(QPoint start, QPoint now)
 {
 	line->setLine(start.x(),start.y(),now.x(),now.y());
-	handles.at(1)->setPos(line->line().dx(),line->line().dy());
+	handles.at(0)->setRect(start.x()-handlew/2,start.y()-handleh/2,handlew,handleh);
+	handles.at(1)->setRect(now.x()-handlew/2,now.y()-handleh/2,handlew,handleh);
 }
 
 void scene::drawMarker(QPoint now)
 {
 	rect->setPos(now-start);
+}
+
+void scene::setScale(double factor)
+{
+	handleh/=factor;
+	handlew/=factor;
+	penwidth/=factor;
+	for(int i=0;i<handles.size();i++)
+	{
+		QRectF rect=handles.at(i)->rect();
+		rect.setX(rect.x()+rect.width()/2-handlew/2);
+		rect.setY(rect.y()+rect.height()/2-handleh/2);
+		rect.setWidth(handlew);
+		rect.setHeight(handleh);
+		handles.at(i)->setRect(rect);
+	}
 }
 
 
@@ -114,6 +136,29 @@ void scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 			break;
 		}
 	}
+	if(!handles.empty())
+	{
+		int check=0;
+		for(int i=0;i<handles.size();i++)
+		{
+			if(handles.at(i)->contains(event->scenePos()))
+				check=i+1;
+		}
+		QPen pen;
+		pen.setWidth(0);
+		pen.setColor(Qt::red);
+		for(int i=0;i<handles.size();i++)
+		{
+			handles.at(i)->setPen(pen);
+		}
+		if(check)
+		{
+			QPen pen;
+			pen.setWidthF(penwidth);
+			pen.setColor(Qt::green);
+			handles.at(check-1)->setPen(pen);
+		}
+	}
 }
 
 
@@ -130,33 +175,46 @@ void scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 	if(event->button()==Qt::LeftButton and currenttool!=-1)
 	{
-		int check=-1;
-		if(!handles.empty())
-			for(int i=0;handles.size();i++)
-				if(handles.at(i)->contains(event->pos()))
-					check=i;
-		if(check==-1)
-			prepareItem();
+		bool check=false;
+		for(int i=0;i<handles.size();i++)
+		{
+			if(handles.at(i)->contains(event->scenePos()))
+				check=true;
+		}
+		if(!check)
+			prepareItem(event->scenePos().toPoint());
 		else
 		{
-
+			prepareMove(event->scenePos().toPoint());
 		}
 
 	}
 }
 
-void scene::prepareItem()
+void scene::prepareItem(QPoint startpoint)
 {
 	selecting=true;
-	start=event->scenePos().toPoint();
+	start=startpoint;
 	tool=currenttool;
-	handles.clear();
+
 	if(rect!=NULL)
+	{
 		removeItem(rect);
+		rect=NULL;
+	}
 	if(ellipse!=NULL)
+	{
 		removeItem(ellipse);
+		ellipse=NULL;
+	}
 	if(line!=NULL)
+	{
 		removeItem(line);
+		line=NULL;
+	}
+	handles.clear();
+
+
 	QPen pen;
 	pen.setWidth(0);
 	pen.setColor(Qt::red);
@@ -167,7 +225,7 @@ void scene::prepareItem()
 		rect=addRect(start.x(),start.y(),0,0,pen,brush);
 		for(int i=0;i<4;i++)
 		{
-			QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-3,start.y()-3,6,6,rect);
+			QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-handlew/2,start.y()-handleh/2,handlew,handleh,rect);
 			handle->setPen(pen);
 			handles<<handle;
 		}
@@ -179,7 +237,7 @@ void scene::prepareItem()
 		line=addLine(start.x(),start.y(),start.x(),start.y(),pen);
 		for(int i=0;i<2;i++)
 		{
-			QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-3,start.y()-3,6,6,line);
+			QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-handlew/2,start.y()-handleh/2,handlew,handleh,line);
 			handle->setPen(pen);
 			handles<<handle;
 		}
@@ -190,7 +248,7 @@ void scene::prepareItem()
 		rect=addRect(start.x(),start.y(),0,0,pen,brush);
 		for(int i=0;i<4;i++)
 		{
-			QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-3,start.y()-3,6,6,rect);
+			QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-handlew/2,start.y()-handleh/2,handlew,handleh,rect);
 			handle->setPen(pen);
 			handles<<handle;
 		}
@@ -198,8 +256,9 @@ void scene::prepareItem()
 	}
 	case 3:
 	{
-		rect=addRect(start.x()-3,start.y()-3,6,6,pen,brush);
-		QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-3,start.y()-3,6,6,rect);
+		rect=addRect(start.x()-handlew/2,start.y()-handleh/2,handlew,handleh,pen,brush);
+		QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-handlew/2,start.y()-handleh/2,handlew,handleh,rect);
+		handle->setPen(pen);
 		QGraphicsLineItem* line=new QGraphicsLineItem(start.x()-10,start.y(),start.x()+10,start.y(),rect);
 		line->setPen(pen);
 		line=new QGraphicsLineItem(start.x(),start.y()-10,start.x(),start.y()+10,rect);
@@ -210,4 +269,22 @@ void scene::prepareItem()
 	default:
 		break;
 	}
+}
+
+void scene::prepareMove(QPoint startpoint)
+{
+	selecting=true;
+	int handlenum=0;
+
+	for(int i=0;i<handles.size();i++)
+		if(handles.at(i)->contains(startpoint))
+			handlenum=i;
+
+	if(handles.size()==4)
+		handlenum=(handlenum+2)%4;
+
+	if(handles.size()==2)
+		handlenum=(handlenum+1)%2;
+
+	start=QPoint(handles.at(handlenum)->rect().x()+handlew/2,handles.at(handlenum)->rect().y()+handleh/2);
 }

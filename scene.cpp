@@ -9,6 +9,8 @@ scene::scene(QObject *parent)  : QGraphicsScene(parent)
 {
 	selecting=false;
 	rect=NULL;
+	ellipse=NULL;
+	line=NULL;
 }
 images* scene::getMainImage()
 {
@@ -24,30 +26,14 @@ cv::Mat scene::getSelected()
 		croppedImage=mainimage->ellipseCrop(rect);
 		break;
 	case 1:
-
 		break;
 	case 2:
 		croppedImage=mainimage->getCvMat()(myRoi);
 		break;
 	case 3:
-
 		break;
 	default:
 		break;
-	}
-	if(currenttool==0)
-	{
-
-	}
-	if(currenttool==1)
-	{
-	}
-	if(currenttool==2)
-	{
-
-	}
-	if(currenttool==3)
-	{
 	}
 
 	return croppedImage;
@@ -74,50 +60,63 @@ void scene::drawRect(QPoint start,QPoint now)
 		topleft.setY(topleft.y()+delta.y());
 	rect->setRect(topleft.x(),topleft.y(),abs(delta.x()),abs(delta.y()));
 
-	switch (tool) {
-	case 0:
-		rect->childItems().at(0)->update();
-		break;
-	case 1:
-		break;
-	case 2:
-		/*rect->childItems().at(0)->setPos(0,0);
-		rect->childItems().at(1)->setPos(0,delta.y());
-		rect->childItems().at(2)->setPos(delta.x(),0);
-		rect->childItems().at(3)->setPos(delta.x(),delta.y());*/
-		break;
-	case 3:
-		break;
-	default:
-		break;
-	}
+	handles.at(1)->setPos(0,delta.y());
+	handles.at(2)->setPos(delta.x(),0);
+	handles.at(3)->setPos(delta);
+}
 
+void scene::drawEllipse(QPoint start, QPoint now)
+{
+	QPoint delta=now-start;
+	QPoint topleft=start;
+	if(delta.x()<0)
+		topleft.setX(topleft.x()+delta.x());
+	if(delta.y()<0)
+		topleft.setY(topleft.y()+delta.y());
+	rect->setRect(topleft.x(),topleft.y(),abs(delta.x()),abs(delta.y()));
+	ellipse->setRect(rect->rect());
+	handles.at(1)->setPos(0,delta.y());
+	handles.at(2)->setPos(delta.x(),0);
+	handles.at(3)->setPos(delta);
+}
+
+void scene::drawLine(QPoint start, QPoint now)
+{
+	line->setLine(start.x(),start.y(),now.x(),now.y());
+	handles.at(1)->setPos(line->line().dx(),line->line().dy());
+}
+
+void scene::drawMarker(QPoint now)
+{
+	rect->setPos(now-start);
 }
 
 
 
 void scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-	//qDebug()<<"1";
 	if(selecting)
 	{
 		switch (tool) {
 		case 0:
-			drawRect(start,event->scenePos().toPoint());
+			drawEllipse(start,event->scenePos().toPoint());
 			break;
 		case 1:
+			drawLine(start,event->scenePos().toPoint());
 			break;
 		case 2:
 			drawRect(start,event->scenePos().toPoint());
 			break;
 		case 3:
+			drawMarker(event->scenePos().toPoint());
 			break;
 		default:
 			break;
 		}
-
 	}
 }
+
+
 
 void scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -129,45 +128,86 @@ void scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void scene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 
-	if(event->button()==Qt::LeftButton)
+	if(event->button()==Qt::LeftButton and currenttool!=-1)
 	{
-		if(rect!=NULL)
+		int check=-1;
+		if(!handles.empty())
+			for(int i=0;handles.size();i++)
+				if(handles.at(i)->contains(event->pos()))
+					check=i;
+		if(check==-1)
+			prepareItem();
+		else
 		{
-			removeItem(rect);
-		}
-		QPen pen;
-		pen.setWidth(0);
-		//pen.setCosmetic(true);
-		pen.setColor(Qt::red);
-		QBrush brush;
-		start=event->scenePos().toPoint();
-		tool=currenttool;
-		switch (currenttool) {
-		case 0:
-			rect=addRect(start.x(),start.y(),0,0,pen,brush);
-			if(rect)
-			{
-				QGraphicsEllipseItem* ellipse=new QGraphicsEllipseItem(rect);
-			}
-			selecting=true;
 
-			break;
-		case 1:
-			break;
-		case 2:
-			rect=addRect(start.x(),start.y(),0,0,pen,brush);
-			for(int i=0;i<4;i++)
-			{
-				QGraphicsEllipseItem *corner=new QGraphicsEllipseItem(start.x()-3,start.y()-3,3,3,rect);
-				corner->setPen(pen);
-			}
-			selecting=true;
-			break;
-		case 3:
-			break;
-		default:
-			break;
 		}
 
+	}
+}
+
+void scene::prepareItem()
+{
+	selecting=true;
+	start=event->scenePos().toPoint();
+	tool=currenttool;
+	handles.clear();
+	if(rect!=NULL)
+		removeItem(rect);
+	if(ellipse!=NULL)
+		removeItem(ellipse);
+	if(line!=NULL)
+		removeItem(line);
+	QPen pen;
+	pen.setWidth(0);
+	pen.setColor(Qt::red);
+	QBrush brush;
+	switch (tool) {
+	case 0:
+	{
+		rect=addRect(start.x(),start.y(),0,0,pen,brush);
+		for(int i=0;i<4;i++)
+		{
+			QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-3,start.y()-3,6,6,rect);
+			handle->setPen(pen);
+			handles<<handle;
+		}
+		ellipse=addEllipse(rect->rect(),pen,brush);
+		break;
+	}
+	case 1:
+	{
+		line=addLine(start.x(),start.y(),start.x(),start.y(),pen);
+		for(int i=0;i<2;i++)
+		{
+			QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-3,start.y()-3,6,6,line);
+			handle->setPen(pen);
+			handles<<handle;
+		}
+		break;
+	}
+	case 2:
+	{
+		rect=addRect(start.x(),start.y(),0,0,pen,brush);
+		for(int i=0;i<4;i++)
+		{
+			QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-3,start.y()-3,6,6,rect);
+			handle->setPen(pen);
+			handles<<handle;
+		}
+		break;
+	}
+	case 3:
+	{
+		rect=addRect(start.x()-3,start.y()-3,6,6,pen,brush);
+		QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-3,start.y()-3,6,6,rect);
+		QGraphicsLineItem* line=new QGraphicsLineItem(start.x()-10,start.y(),start.x()+10,start.y(),rect);
+		line->setPen(pen);
+		line=new QGraphicsLineItem(start.x(),start.y()-10,start.x(),start.y()+10,rect);
+		line->setPen(pen);
+		handles<<handle;
+	}
+		break;
+	default:
+		break;
 	}
 }

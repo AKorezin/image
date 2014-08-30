@@ -1,8 +1,8 @@
 #ifndef SCENE_H
 #define SCENE_H
 #include "QGraphicsScene"
-
 #include "images.h"
+
 class scene : public QGraphicsScene
 {
 public:
@@ -16,17 +16,22 @@ public slots:
 private:
 	images* mainimage;
 	QPoint start;
-	QGraphicsRectItem *rect;
-	QList<QGraphicsEllipseItem *> corners;
 	int tool;
 	bool selecting;
+	QGraphicsRectItem *rect;
+	QGraphicsEllipseItem *ellipse;
+	QGraphicsLineItem *line;
+	QList<QGraphicsRectItem *> handles;
+
+
 	void mousePressEvent(QGraphicsSceneMouseEvent *);
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
 	void mouseMoveEvent(QGraphicsSceneMouseEvent *);
+	void prepareItem();
 	void drawRect(QPoint,QPoint);
-	/*void drawLine();
-	void drawCirc();
-	void drawMark();*/
+	void drawEllipse(QPoint,QPoint);
+	void drawLine(QPoint,QPoint);
+	void drawMarker(QPoint);
 };
 
 #endif // SCENE_H

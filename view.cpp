@@ -4,6 +4,7 @@
 #include "QMouseEvent"
 #include "QScrollBar"
 #include "QDebug"
+extern int currenttool;
 view::view(QWidget *parent) : QGraphicsView(parent)
 {
 	_pan=false;
@@ -44,6 +45,7 @@ void view::mousePressEvent(QMouseEvent *event)
 		event->ignore();
 		QGraphicsView::mousePressEvent(event);
 	}
+
 }
 
 void view::mouseReleaseEvent(QMouseEvent *event)

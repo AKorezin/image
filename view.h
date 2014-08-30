@@ -2,6 +2,7 @@
 #define VIEW_H
 #include "QGraphicsView"
 #include <QObject>
+
 class view : public QGraphicsView
 {
 	Q_OBJECT
@@ -10,6 +11,7 @@ public:
 signals:
 	void export_triggered();
 private:
+
 	void mouseMoveEvent(QMouseEvent *event);
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);

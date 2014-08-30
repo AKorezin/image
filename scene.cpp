@@ -166,7 +166,20 @@ void scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 void scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	if(selecting and event->button()==Qt::LeftButton)
+	{
 		selecting=false;
+		int number=0;
+		for(int i=1;i<handles.size();i++)
+			if(handles.at(i-1)->rect()==handles.at(i)->rect())
+				number++;
+		if (number)
+		{
+			for(int i=0;i<handles.size();i++)
+				removeItem(handles.at(i));
+			handles.clear();
+		}
+	}
+
 }
 
 

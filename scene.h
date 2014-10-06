@@ -13,6 +13,7 @@ public:
 	images* getMainImage();
 	cv::Mat getSelected();
 	void exportcurrent();
+	QList<int> getProfile();
 public slots:
 	void setScale(double);
 private:
@@ -20,7 +21,7 @@ private:
 	QPoint start;
 	int tool;
 	double handlew,handleh,penwidth;
-	bool selecting;
+	bool selecting,translate;
 	QGraphicsRectItem *rect;
 	QGraphicsEllipseItem *ellipse;
 	QGraphicsLineItem *line;

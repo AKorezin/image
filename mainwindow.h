@@ -44,6 +44,8 @@ private slots:
 	void exportSelected();
 
 	void actionGroupChecked(QAction *);
+
+	void buildProfile();
 private:
 	Ui::MainWindow *ui;
 	QList<images*> imagelist;

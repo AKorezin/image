@@ -87,7 +87,9 @@ void view::contextMenuEvent(QContextMenuEvent *event)
 {
 	QMenu menu(this);
 	menu.addAction("Экспортировать выделенную область");
+	menu.addAction("Профиль");
 	connect(menu.actions().at(0),SIGNAL(triggered()),this,SIGNAL(export_triggered()));
+	connect(menu.actions().at(1),SIGNAL(triggered()),this,SIGNAL(profile_triggered()));
 	menu.exec(event->globalPos());
 }
 

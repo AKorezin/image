@@ -8,6 +8,7 @@ extern int currenttool;
 scene::scene(QObject *parent)  : QGraphicsScene(parent)
 {
 	selecting=false;
+	translate=false;
 	rect=NULL;
 	ellipse=NULL;
 	line=NULL;
@@ -40,6 +41,20 @@ cv::Mat scene::getSelected()
 	}
 
 	return croppedImage;
+}
+
+QList<int> scene::getProfile()
+{
+	QList<int> range;
+	cv::Point p1,p2;
+	p1.x=line->line().x1();
+	p1.y=line->line().y1();
+	p2.x=line->line().x2();
+	p2.y=line->line().y2();
+	cv::LineIterator it(mainimage->getCvMat(), p1, p2, 8,true);
+	for(int i = 0; i < it.count; i++, it++)
+		range<<it.ptr[0];
+	return range;
 }
 
 void scene::setMainImage(images *image)
@@ -85,11 +100,29 @@ void scene::drawEllipse(QPoint start, QPoint now)
 
 }
 
-void scene::drawLine(QPoint start, QPoint now)
+void scene::drawLine(QPoint start_l, QPoint now)
 {
-	line->setLine(start.x(),start.y(),now.x(),now.y());
-	handles.at(0)->setRect(start.x()-handlew/2,start.y()-handleh/2,handlew,handleh);
-	handles.at(1)->setRect(now.x()-handlew/2,now.y()-handleh/2,handlew,handleh);
+	if(translate)
+	{
+		QPoint p1,p2,dp;
+		dp=now-start_l;
+		p1=line->line().p1().toPoint();
+		p2=line->line().p2().toPoint();
+		p1+=dp;
+		p2+=dp;
+		line->setLine(p1.x(),p1.y(),p2.x(),p2.y());
+		handles.at(0)->setRect(p1.x()-handlew/2,p1.y()-handleh/2,handlew,handleh);
+		handles.at(1)->setRect(p2.x()-handlew/2,p2.y()-handleh/2,handlew,handleh);
+		handles.at(2)->setRect(now.x()-handlew/2,now.y()-handleh/2,handlew,handleh);
+		start=now;
+	}
+	else
+	{
+		line->setLine(start_l.x(),start_l.y(),now.x(),now.y());
+		handles.at(0)->setRect(start_l.x()-handlew/2,start.y()-handleh/2,handlew,handleh);
+		handles.at(1)->setRect(now.x()-handlew/2,now.y()-handleh/2,handlew,handleh);
+		handles.at(2)->setRect((now.x()+start_l.x())/2-handlew/2,(now.y()+start_l.y())/2-handleh/2,handlew,handleh);
+	}
 }
 
 void scene::drawMarker(QPoint now)
@@ -165,9 +198,10 @@ void scene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	if(selecting and event->button()==Qt::LeftButton)
+	if((selecting or translate) and event->button()==Qt::LeftButton)
 	{
 		selecting=false;
+		translate=false;
 		int number=0;
 		for(int i=1;i<handles.size();i++)
 			if(handles.at(i-1)->rect()==handles.at(i)->rect())
@@ -248,7 +282,7 @@ void scene::prepareItem(QPoint startpoint)
 	case 1:
 	{
 		line=addLine(start.x(),start.y(),start.x(),start.y(),pen);
-		for(int i=0;i<2;i++)
+		for(int i=0;i<3;i++)
 		{
 			QGraphicsRectItem* handle=new QGraphicsRectItem(start.x()-handlew/2,start.y()-handleh/2,handlew,handleh,line);
 			handle->setPen(pen);
@@ -295,9 +329,12 @@ void scene::prepareMove(QPoint startpoint)
 
 	if(handles.size()==4)
 		handlenum=(handlenum+2)%4;
-
-	if(handles.size()==2)
-		handlenum=(handlenum+1)%2;
-
+	if(handles.size()==3)
+	{
+		if(handlenum<2)
+			handlenum=(handles.size()+1)%2;
+		else
+			translate=true;
+	}
 	start=QPoint(handles.at(handlenum)->rect().x()+handlew/2,handles.at(handlenum)->rect().y()+handleh/2);
 }

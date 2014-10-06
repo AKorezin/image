@@ -10,6 +10,7 @@ public:
 	view(QWidget *parent = 0);
 signals:
 	void export_triggered();
+	void profile_triggered();
 	void scaleChanged(double);
 private:
 

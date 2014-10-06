@@ -85,6 +85,12 @@ void MainWindow::exportSelected()
 
 }
 
+void MainWindow::buildProfile()
+{
+	scenelist.at(tabs->currentIndex())->getProfile();
+
+}
+
 void MainWindow::openSettingsDialog()
 {
 	connect(dialog,SIGNAL(accepted()),this,SLOT(saveSettings()));
@@ -174,6 +180,7 @@ void MainWindow::displayLoaded(cv::Mat image,QString filename)
 	newview->setScene(pixmap);
 	newview->show();
 	connect(newview,SIGNAL(export_triggered()),this,SLOT(exportSelected()));
+	connect(newview,SIGNAL(profile_triggered()),this,SLOT(buildProfile()));
 	tabs->addTab(newview,filename);
 }
 
